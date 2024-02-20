@@ -2,6 +2,8 @@
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+Make sure to create a `.env` file with the following content based on `env.template`.
+
 ## Setup
 
 Make sure to install the dependencies:
