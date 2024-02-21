@@ -1,8 +1,9 @@
-import passport from 'passport'
-import {Strategy as SAMLStrategy, type VerifyWithoutRequest, type SamlConfig} from 'passport-saml'
+import passport, {type Strategy} from 'passport'
+import {Strategy as SAMLStrategy, type VerifyWithoutRequest, type SamlConfig, AbstractStrategy} from 'passport-saml'
 import {Strategy as LocalStrategy, VerifyFunction} from "passport-local";
+import {Profile} from "passport-saml/lib/passport-saml/types";
 
-interface MyUser {
+interface MyUser extends Record<string, string | number> {
   id: number;
   username: string;
 }
@@ -11,10 +12,24 @@ declare global {
   namespace Express {
     interface User extends MyUser {
     }
+    interface Request {
+    }
   }
 }
 
 const USER: MyUser = {id: 1, username: 'admin'};
+
+const verifySAML: VerifyWithoutRequest = (profile, done) => {
+  console.log('in saml strategy after auth', profile)
+  return done(null, USER)
+};
+
+const verifyLocal: VerifyFunction = function (username, password, done) {
+  if (username === 'admin' && password === 'admin') {
+    return done(null, USER)
+  }
+  return done(null, false)
+};
 
 export default fromNodeMiddleware((req, res, next) => {
   console.log('setting up passport')
@@ -28,30 +43,18 @@ export default fromNodeMiddleware((req, res, next) => {
     signatureAlgorithm: "sha512",
   }
 
-  const verifySAML: VerifyWithoutRequest = (profile, done) => {
-    console.log('in saml strat after auth', profile)
+  const samlStrategy: AbstractStrategy = new SAMLStrategy(SAMLConfig, verifySAML)
+  passport.use(samlStrategy as Strategy)
 
-    // return done(new Error("test"), )
-    return done(null, USER)
-  };
-  const samlStrategy: SAMLStrategy = new SAMLStrategy(SAMLConfig, verifySAML)
-  passport.use(samlStrategy)
-
-  const verifyLocal: VerifyFunction = function (username, password, done) {
-    console.log('in strat')
-    if (username === 'admin' && password === 'admin') {
-      console.log('is good')
-      return done(null, USER)
-    }
-    console.error("no good")
-    return done(null, false)
-  };
   const localStrategy: LocalStrategy = new LocalStrategy(verifyLocal);
-
   passport.use(localStrategy)
 
-  passport.serializeUser((user, done) => {done(null, user.id)})
-  passport.deserializeUser((user, done) => {done(null, USER)})
+  passport.serializeUser((user, done) => {
+    done(null, user.id)
+  })
+  passport.deserializeUser((user, done) => {
+    done(null, USER)
+  })
 
 
   console.log("finished setting up passport")
