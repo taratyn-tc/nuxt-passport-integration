@@ -1,6 +1,7 @@
-import {request, response, type Request, type Response, type NextFunction} from "express";
+import {type NextFunction, type Request, request, type Response, response} from "express";
 import type {IncomingMessage, ServerResponse} from "node:http";
-import {NodeMiddleware} from "h3";
+
+
 
 type ExpressifyT = (req: IncomingMessage, res: ServerResponse<IncomingMessage>, next: (err?: any) => void) => [Request, Response, NextFunction];
 export const expressify: ExpressifyT = (req: IncomingMessage, res: ServerResponse<IncomingMessage>, next): [Request, Response, NextFunction] => {
@@ -15,3 +16,12 @@ export const expressify: ExpressifyT = (req: IncomingMessage, res: ServerRespons
   const eNext = next as NextFunction
   return [eReq, eRes, eNext]
 };
+
+/**
+ * Roughly looking for a session object in the request
+ * @param req
+ */
+export const isExpressRequestWithSession = (req: IncomingMessage): req is Request => {
+  const eReq = req as Request
+  return !!eReq.session && !!eReq.session.cookie
+}
