@@ -50,8 +50,10 @@ export default defineEventHandler(async (event: H3Event<Request>) => {
         await setResponseHeader(event, 'Location', UNAUTHORIZED_FORWARD_TO_PATH)
         break
       case AuthProtectionResponse.Unauthorized:
-        await setResponseStatus(event, 401)
-        break
+        throw createError({
+          status: 401,
+          message: 'Unauthorized'
+        })
     }
   }
 })
