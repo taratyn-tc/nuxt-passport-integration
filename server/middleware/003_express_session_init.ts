@@ -1,5 +1,5 @@
 import session from 'express-session'
-import {expressify} from "~/server/util/express-compat";
+import {expressify} from "~/server/utils/express-compat";
 import {PrismaSessionStore} from "@quixo3/prisma-session-store";
 import {PrismaClient} from "@prisma/client";
 

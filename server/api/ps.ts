@@ -1,6 +1,6 @@
 import passport from 'passport'
-import {COMMON_AUTH_VIEW_CONFIG} from "~/server/util/auth_view_config";
-import {expressify} from "~/server/util/express-compat";
+import {COMMON_AUTH_VIEW_CONFIG} from "~/server/utils/auth_view_config";
+import {expressify} from "~/server/utils/express-compat";
 
 const authView = passport.authenticate('local', COMMON_AUTH_VIEW_CONFIG);
 

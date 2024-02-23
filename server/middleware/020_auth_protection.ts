@@ -1,5 +1,5 @@
-import {isExpressRequestWithSession} from "~/server/util/express-compat";
-import session from 'express-session'
+import {expressifyRequest, getExpressSession} from "~/server/utils/express-compat";
+import {IncomingMessage} from "node:http";
 
 const ALLOWED_PATH_PREFIXES: string[] = [
   '/__nuxt_error',
@@ -9,28 +9,9 @@ const ALLOWED_PATH_PREFIXES: string[] = [
   '/api/session',
 ]
 
-interface SessionData extends session.SessionData {
-  user?: Record<string, string | number>
-}
-
-const isOurSessionData = (data: session.SessionData): data is SessionData => !!data
-
-function checkIfAllowed<Request>(req) {
-  const {path} = req
-  if (!isExpressRequestWithSession(req)) {
-    throw createError({
-      status: 500,
-      message: 'Session not found'
-    })
-  }
-  const currentSession = req.session;
-  if (!isOurSessionData(currentSession)) {
-    throw createError({
-      status: 500,
-      message: 'Session data not found'
-    })
-  }
-  const sessionData: SessionData = currentSession
+function checkIfAllowed(req: IncomingMessage) {
+  const {path} = expressifyRequest(req);
+  const sessionData = getExpressSession(req);
   const user = sessionData?.passport?.user
   if (user) {
     return
@@ -49,12 +30,9 @@ export default fromNodeMiddleware((req, res, next) => {
   checkIfAllowed(req)
   next()
 })
-// export default defineEventHandler(async (event) => {
-//   console.log('Session!')
+// export default defineEventHandler((event) => {
+//   console.log('XXX Session!')
 //   const {req, res} = event.node
-//   console.log('FFF before set header', res.getHeaders())
-//   res.setHeader('X-FOO-FFF', 'BAR')
-//   console.log('FFF after set header')
-//   checkIfAllowed(req, event.path);
+//   checkIfAllowed(req);
 //   // go ahead!
 // })

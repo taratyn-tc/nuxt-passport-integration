@@ -1,4 +1,4 @@
-import {isExpressRequestWithSession} from "~/server/util/express-compat";
+import {isExpressRequestWithSession} from "~/server/utils/express-compat";
 
 export default defineEventHandler(async (event) => {
   console.log('Session!')
