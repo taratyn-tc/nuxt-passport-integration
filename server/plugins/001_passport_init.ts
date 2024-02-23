@@ -30,7 +30,7 @@ const verifyLocal: VerifyFunction = function (username, password, done) {
   return done(null, false)
 };
 
-export default defineEventHandler((event) => {
+export default defineNitroPlugin((def) => {
   const SAMLConfig: SamlConfig = {
     path: '/api/saml-callback',
     issuer: 'passport-saml',
