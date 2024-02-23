@@ -32,7 +32,7 @@ const verifyLocal: VerifyFunction = function (username, password, done) {
 
 export default defineNitroPlugin((def) => {
   const SAMLConfig: SamlConfig = {
-    path: '/api/saml-callback',
+    path: '/api/auth/saml-callback',
     issuer: 'passport-saml',
     entryPoint: process.env.SAML_ENTRY_POINT!,
     // absolutely required or it will not work

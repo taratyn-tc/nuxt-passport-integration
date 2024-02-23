@@ -3,8 +3,6 @@ import {expressify} from "~/server/utils/express-compat";
 import {PrismaSessionStore} from "@quixo3/prisma-session-store";
 import {PrismaClient} from "@prisma/client";
 
-
-
 const sessionMiddleware = session({
   secret: process.env.NUXT_SECRET!,
   saveUninitialized: false,
