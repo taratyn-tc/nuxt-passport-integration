@@ -17,7 +17,7 @@
   <ul>
     <li><NuxtLink to="/private/">Index</NuxtLink></li>
     <li><NuxtLink to="/private/one">One</NuxtLink></li>
-    <li><NuxtLink to="/private/one">Two</NuxtLink></li>
+    <li><NuxtLink to="/private/two">Two</NuxtLink></li>
   </ul>
 </template>
 
