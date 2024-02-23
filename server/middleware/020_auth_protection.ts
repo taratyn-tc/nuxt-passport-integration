@@ -26,13 +26,8 @@ function checkIfAllowed(req: IncomingMessage) {
   }
 }
 
-export default fromNodeMiddleware((req, res, next) => {
-  checkIfAllowed(req)
-  next()
+export default defineEventHandler((event) => {
+  const {req, res} = event.node
+  checkIfAllowed(req);
+  // go ahead!
 })
-// export default defineEventHandler((event) => {
-//   console.log('XXX Session!')
-//   const {req, res} = event.node
-//   checkIfAllowed(req);
-//   // go ahead!
-// })
