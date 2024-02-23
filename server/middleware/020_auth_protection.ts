@@ -5,23 +5,23 @@ import consola from 'consola'
 import {ALLOWED_PATH_PREFIXES, PATHS_TO_401, UNAUTHORIZED_FORWARD_TO_PATH} from "~/utils/authz/config";
 
 
-
 function checkIfAllowed(req: IncomingMessage): boolean {
   const {path} = expressifyRequest(req);
   const allowedPath = ALLOWED_PATH_PREFIXES.some(prefix => {
     const startsWith = path.startsWith(prefix)
-    consola.log('startsWith', startsWith, prefix, path)
     return startsWith
   });
   if (allowedPath) {
+    console.log("allowed path", allowedPath, path)
     return true
   }
   const sessionData = getExpressSession(req);
   const user = sessionData?.passport?.user
   if (user) {
-    console.log("no user")
+    console.log("Found user", user)
     return true
   }
+  console.log("No user, not allowed", user, path)
   return false
 }
 
@@ -39,7 +39,7 @@ const forwardOrUnauthorized = (event: H3Event<Request>): AuthProtectionResponse 
 }
 
 export default defineEventHandler(async (event: H3Event<Request>) => {
-  console.log("Auth protection middleware")
+  console.log("Auth protection server middleware")
   const {req, res} = event.node
   const isAllowed = checkIfAllowed(req);
   console.log('isAllowed', isAllowed, getRequestPath(event))
