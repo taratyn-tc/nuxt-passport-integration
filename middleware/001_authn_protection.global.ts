@@ -24,14 +24,15 @@ async function getSessionData(): Promise<SessionData> {
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const {path} = to
-  consola.log('AAA', to)
+  consola.log('AAA NuxtAuthMiddleware', to)
   if (ALLOWED_PATH_PREFIXES.some(prefix => path.startsWith(prefix))) {
+    console.log("BBB allowed path", path)
     return
   }
   const session = await getSessionData();
   const user = session?.passport?.user
   if (!user) {
-    consola.log('EEE', 'no user')
+    consola.log('EEE', 'no user', user, path)
     return navigateTo(UNAUTHORIZED_FORWARD_TO_PATH)
   }
 })
