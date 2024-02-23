@@ -3,10 +3,8 @@ import {IncomingMessage} from "node:http";
 
 const ALLOWED_PATH_PREFIXES: string[] = [
   '/__nuxt_error',
-  '/api/ps',
   '/api/public',
-  '/api/saml',
-  '/api/session',
+  '/api/auth',
 ]
 
 function checkIfAllowed(req: IncomingMessage) {
