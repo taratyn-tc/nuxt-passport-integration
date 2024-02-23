@@ -2,6 +2,7 @@ import {IncomingMessage, ServerResponse} from "node:http";
 
 import {type NextFunction, type Request, request, type Response, response} from "express";
 import session from "express-session";
+import {SessionData} from "~/utils/session-data";
 
 export const expressifyRequest = (req: IncomingMessage): Request => {
   if (Object.getPrototypeOf(req) !== request) {
@@ -27,10 +28,6 @@ export const expressify: ExpressifyT = (req: IncomingMessage, res: ServerRespons
   const eNext = next as NextFunction
   return [eReq, eRes, eNext]
 };
-
-interface SessionData extends session.SessionData {
-  passport?: Record<string, string | number >
-}
 
 const isOurSessionData = (data: session.SessionData): data is SessionData => !!data
 

@@ -2,19 +2,9 @@ import {expressifyRequest, getExpressSession} from "~/server/utils/express-compa
 import {IncomingMessage} from "node:http";
 import {H3Event} from "h3";
 import consola from 'consola'
+import {ALLOWED_PATH_PREFIXES, PATHS_TO_401, UNAUTHORIZED_FORWARD_TO_PATH} from "~/utils/authz/config";
 
-const UNAUTHORIZED_FORWARD_TO_PATH = '/login';
 
-const PATHS_TO_401: string[] = [
-  '/api/',
-]
-
-const ALLOWED_PATH_PREFIXES: string[] = [
-  '/__nuxt_error',
-  '/api/auth',
-  '/api/public',
-  '/login',
-]
 
 function checkIfAllowed(req: IncomingMessage): boolean {
   const {path} = expressifyRequest(req);
@@ -60,10 +50,8 @@ export default defineEventHandler(async (event: H3Event<Request>) => {
         await setResponseHeader(event, 'Location', UNAUTHORIZED_FORWARD_TO_PATH)
         break
       case AuthProtectionResponse.Unauthorized:
-        throw createError({
-          status: 401,
-          message: 'Unauthorized'
-        })
+        await setResponseStatus(event, 401)
+        break
     }
   }
 })
