@@ -1,5 +1,6 @@
-import {type NextFunction, type Request, request, type Response, response} from "express";
 import {IncomingMessage, ServerResponse} from "node:http";
+
+import {type NextFunction, type Request, request, type Response, response} from "express";
 import session from "express-session";
 
 export const expressifyRequest = (req: IncomingMessage): Request => {
@@ -11,18 +12,24 @@ export const expressifyRequest = (req: IncomingMessage): Request => {
 }
 
 type ExpressifyT = (req: IncomingMessage, res: ServerResponse<IncomingMessage>, next: (err?: any) => void) => [Request, Response, NextFunction];
-export const expressify: ExpressifyT = (req: IncomingMessage, res: ServerResponse<IncomingMessage>, next): [Request, Response, NextFunction] => {
-  const eReq = expressifyRequest(req);
+
+export const expressifyResponse = (res: ServerResponse<IncomingMessage>): Response => {
   if (Object.getPrototypeOf(res) !== response) {
     Object.setPrototypeOf(res, response)
   }
   const eRes = res as Response
+  return eRes;
+}
+
+export const expressify: ExpressifyT = (req: IncomingMessage, res: ServerResponse<IncomingMessage>, next): [Request, Response, NextFunction] => {
+  const eReq = expressifyRequest(req);
+  const eRes = expressifyResponse(res);
   const eNext = next as NextFunction
   return [eReq, eRes, eNext]
 };
 
 interface SessionData extends session.SessionData {
-  passport?: Record<string, string | number>
+  passport?: Record<string, string | number >
 }
 
 const isOurSessionData = (data: session.SessionData): data is SessionData => !!data
@@ -37,20 +44,20 @@ export const isExpressRequestWithSession = (req: IncomingMessage): req is Reques
   return !!eReq.session && !!eReq.session.cookie
 }
 
-export const getExpressSession = (req: IncomingMessage) => {
+type SessionWithData = session.Session & Partial<SessionData>;
+export const getExpressSession = (req: IncomingMessage): SessionWithData => {
   if (!isExpressRequestWithSession(req)) {
     throw createError({
       status: 500,
       message: 'Session not found'
     })
   }
-  const currentSession = req.session;
+  const currentSession: SessionWithData = req.session;
   if (!isOurSessionData(currentSession)) {
     throw createError({
       status: 500,
       message: 'Session data not found'
     })
   }
-  const sessionData: SessionData = currentSession
-  return sessionData;
+  return currentSession;
 };
