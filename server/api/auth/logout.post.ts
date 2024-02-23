@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
   const {req} = event.node
   await removeExpressSession(req)
   await clearSession(event, {})
-  setResponseStatus(event, 204)
+  setResponseStatus(event, 205)
 })
 
 const removeExpressSession = (req: IncomingMessage): Promise<void> => {
