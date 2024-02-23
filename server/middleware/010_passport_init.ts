@@ -30,7 +30,7 @@ const verifyLocal: VerifyFunction = function (username, password, done) {
   return done(null, false)
 };
 
-export default fromNodeMiddleware((req, res, next) => {
+export default defineEventHandler((event) => {
   const SAMLConfig: SamlConfig = {
     path: '/api/saml-callback',
     issuer: 'passport-saml',
@@ -52,5 +52,4 @@ export default fromNodeMiddleware((req, res, next) => {
     done(null, USER)
   })
 
-  return next()
 })
